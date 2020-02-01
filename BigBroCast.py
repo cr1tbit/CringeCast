@@ -14,6 +14,10 @@ def speak(saying:str,lang:str="en") -> None:
     print("Calling command:" + command)
     os.system(command)
 
+@app.route('/favicon.ico')
+def serve_favicon():
+    return 'too lazy.'
+
 @app.route('/say/<saying>')
 def say(saying:str):
     speak(saying,"en")

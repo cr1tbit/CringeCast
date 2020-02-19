@@ -1,6 +1,7 @@
 from flask import Flask, escape, request
 import os
 import re
+import langdetect
 
 app = Flask(__name__)
 
@@ -18,11 +19,10 @@ def speak_single_sentence(sentence_sane:str, lang_sane:str="en") -> None:
 
 def speak(saying:str,lang:str="en") -> None:
     saying_sane = sanitize(saying)
-    lang_sane = sanitize(lang)
-    print(saying_sane)
-    sentences_sane = re.split('[.?!]',saying_sane)[:10]
-    print(sentences_sane)
-    [speak_single_sentence(s,lang_sane)
+    #lang_sane = sanitize(lang)
+    sentences_sane = re.split('[.?!]',saying_sane)[:3]
+    lang = langdetect.detect(sentences_sane[0])
+    [speak_single_sentence(s,lang)
         for s in sentences_sane
     ]
 

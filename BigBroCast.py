@@ -4,8 +4,12 @@ import re
 
 app = Flask(__name__)
 
+config = {
+    'max_sentence_len':5
+}
+
 def sanitize(s:str)-> str:
-    return re.sub('[^0-9a-zA-Z,.zżźćńółęąśŻŹĆĄŚĘŁÓŃ ]+', '', s) 
+    return re.sub('[^0-9a-zA-Z,.?!\'żźćńółęąśŻŹĆĄŚĘŁÓŃ ]+', '', s) 
 
 def speak_single_sentence(sentence_sane:str, lang_sane:str="en") -> None:
     command = f'shellscripts/speak.sh "{sentence_sane}" {lang_sane}'
@@ -15,8 +19,25 @@ def speak_single_sentence(sentence_sane:str, lang_sane:str="en") -> None:
 def speak(saying:str,lang:str="en") -> None:
     saying_sane = sanitize(saying)
     lang_sane = sanitize(lang)
-    sentences_sane = saying_sane.split(".")
-    [speak_single_sentence(s,lang_sane) for s in sentences_sane[0:5]]
+    print(saying_sane)
+    sentences_sane = re.split('[.?!]',saying_sane)[:10]
+    print(sentences_sane)
+    [speak_single_sentence(s,lang_sane)
+        for s in sentences_sane
+    ]
+
+@app.route('/file/<filename>')
+def file(filename:str):
+    filename_sanitized = sanitize(filename)
+    try:
+        with open("text_files/" + filename_sanitized,'r') as fh:
+            file_content = fh.read()
+            file_content_sanitized = sanitize(file_content)
+            speak(file_content_sanitized,"en")
+    except:
+        speak("file not found.","en")
+
+    return f'OK'
 
 @app.route('/favicon.ico')
 def serve_favicon():

@@ -5,14 +5,18 @@ import re
 app = Flask(__name__)
 
 def sanitize(s:str)-> str:
-    return re.sub('[^a-zA-Z,.zżźćńółęąśŻŹĆĄŚĘŁÓŃ ]+', '', s) 
+    return re.sub('[^0-9a-zA-Z,.zżźćńółęąśŻŹĆĄŚĘŁÓŃ ]+', '', s) 
+
+def speak_single_sentence(sentence_sane:str, lang_sane:str="en") -> None:
+    command = f'shellscripts/speak.sh "{sentence_sane}" {lang_sane}'
+    print("Calling command:" + command)
+    os.system(command)
 
 def speak(saying:str,lang:str="en") -> None:
     saying_sane = sanitize(saying)
     lang_sane = sanitize(lang)
-    command = f'shellscripts/speak.sh "{saying_sane}" {lang_sane}'
-    print("Calling command:" + command)
-    os.system(command)
+    sentences_sane = saying_sane.split(".")
+    [speak_single_sentence(s,lang_sane) for s in sentences_sane[0:5]]
 
 @app.route('/favicon.ico')
 def serve_favicon():

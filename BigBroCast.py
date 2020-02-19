@@ -5,7 +5,7 @@ import re
 app = Flask(__name__)
 
 def sanitize(s:str)-> str:
-    return re.sub('[^a-zA-Z ]+', '', s) 
+    return re.sub('[^a-zA-Z,.zżźćńółęąśŻŹĆĄŚĘŁÓŃ ]+', '', s) 
 
 def speak(saying:str,lang:str="en") -> None:
     saying_sane = sanitize(saying)

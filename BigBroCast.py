@@ -6,11 +6,25 @@ import langdetect
 app = Flask(__name__)
 
 config = {
-    'max_sentence_len':5
+    'max_sentence_len':16,
+    'max_api_str_len':200
 }
 
 def sanitize(s:str)-> str:
     return re.sub('[^0-9a-zA-Z,.?!\'żźćńółęąśŻŹĆĄŚĘŁÓŃ ]+', '', s) 
+
+def smart_split(s:str) -> list:
+    # since google voice API doesn't respond to strings longer than 200-chars
+    # we're stripping longer strings into a couple of requests.
+    s_return = []
+    for ss in re.split('[.?!]',s):
+        if len(ss) <= config['max_api_str_len']:
+            s_return.append(ss)
+        else:
+            #think of something smarter! 
+            s_return.append(ss[:config['max_api_str_len']])
+    return s_return
+
 
 def speak_single_sentence(sentence_sane:str, lang_sane:str="en") -> None:
     command = f'shellscripts/speak.sh "{sentence_sane}" {lang_sane}'
@@ -20,7 +34,7 @@ def speak_single_sentence(sentence_sane:str, lang_sane:str="en") -> None:
 def speak(saying:str,lang:str="en") -> None:
     saying_sane = sanitize(saying)
     #lang_sane = sanitize(lang)
-    sentences_sane = re.split('[.?!]',saying_sane)[:3]
+    sentences_sane = smart_split(saying_sane)[:config['max_sentence_len']]
     lang = langdetect.detect(sentences_sane[0])
     [speak_single_sentence(s,lang)
         for s in sentences_sane

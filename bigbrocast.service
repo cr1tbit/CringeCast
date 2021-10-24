@@ -1,0 +1,16 @@
+[Unit]
+Description=BigBroCast service
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=10
+User=pi
+WorkingDirectory=/home/pi/BigBroCast
+ExecStart=/bin/bash /home/pi/BigBroCast/run.sh
+
+[Install]
+WantedBy=multi-user.target
+

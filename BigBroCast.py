@@ -33,10 +33,12 @@ def speak_single_sentence(sentence_sane:str, lang_sane:str="en") -> None:
 
 def speak(saying:str,lang:str="en") -> None:
     saying_sane = sanitize(saying)
-    #lang_sane = sanitize(lang)
     sentences_sane = smart_split(saying_sane)[:config['max_sentence_len']]
-    lang = langdetect.detect(sentences_sane[0])
-    [speak_single_sentence(s,lang)
+    if lang is None:
+        lang_sane = langdetect.detect(sentences_sane[0])
+    else:
+        lang_sane = sanitize(lang)
+    [speak_single_sentence(s,lang_sane)
         for s in sentences_sane
     ]
 
@@ -77,7 +79,7 @@ def set_vol(vol_percent:int):
 
 @app.route('/<saying>')
 def speak_any_lang(saying:str):
-    lang = request.args.get("l","en")
+    lang = request.args.get("l",None)
     speak(saying,lang)
     return f'OK: {saying}, language is: {lang}'
 

@@ -83,4 +83,8 @@ def speak_any_lang(saying:str):
     speak(saying,lang)
     return f'OK: {saying}, language is: {lang}'
 
+@app.route('/')
+def return_app_info():
+    return "available endpoints: <br> /TEXT (autodetect language, works like crap lmao) <br> /TEXT?l=XX, <br> /say/TEXT, <br> /mow/TEKST"
+
 app.run(host='0.0.0.0',port="42069")

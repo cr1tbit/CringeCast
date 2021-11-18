@@ -42,6 +42,13 @@ def speak(saying:str,lang:str="en") -> None:
         for s in sentences_sane
     ]
 
+def play_file(filename_no_ext:str) -> None:
+    filename_sane = sanitize(filename_no_ext)+".mp3"
+    command = f'shellscripts/play.sh audio_files/{filename_sane}'
+    print("Calling command:" + command)
+    os.system(command) 
+
+'''
 @app.route('/file/<filename>')
 def file(filename:str):
     filename_sanitized = sanitize(filename)
@@ -54,6 +61,7 @@ def file(filename:str):
         speak("file not found.","en")
 
     return f'OK'
+'''
 
 @app.route('/favicon.ico')
 def serve_favicon():
@@ -68,6 +76,11 @@ def say(saying:str):
 def mow(saying:str):
     speak(saying,"pl")
     return f'OK: {saying}'
+
+@app.route('/play/<filename>')
+def play(filename:str):
+    play_file(filename)
+    return f'OK: {filename}.mp3'
 
 @app.route('/vol/<int:vol_percent>')
 def set_vol(vol_percent:int):

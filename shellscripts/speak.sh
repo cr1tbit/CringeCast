@@ -1,3 +1,6 @@
 #!/bin/bash
-say() { local IFS=+; mpg123 "http://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&q=$1&tl=$2";}
-say "$1" "$2"
+play() { local IFS=+; mpg123 "$1";}
+
+TMPNAME=$(mktemp)
+wget "translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&q=$1&tl=$2" -O $TMPNAME
+play $TMPNAME 

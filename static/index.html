@@ -1,0 +1,281 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>BigBroCast</title>
+  <meta name="description" content="The HTML5 Herald">
+  <meta name="author" content="SitePoint">
+
+  <link rel="stylesheet" href="static/siimple.min.css">
+</head>
+  <link rel="icon" href="static/favicon.png">
+
+<body onload="appStart()" onunload="appClose()">
+<div style="max-width:900px; margin:0 auto;" >
+    <div class="siimple-box siimple-box--green">
+        <div class="siimple-box-title">BigBroCast</div>
+        <div class="siimple-box-subtitle">Remotely cast cringe, now 100% more frontend!</div>
+        <div class="siimple-box-detail">
+            <a class="siimple-link" 
+               href="https://github.com/cr1tbit/BigBroCast">
+               https://github.com/cr1tbit/BigBroCast
+            </a>
+        </div>
+    </div>
+    <div class="siimple-grid">
+        <div class="siimple-grid-row">
+            <!-- Left part of the window-->
+            <div class="siimple-grid-col siimple-grid-col--8">
+                <!-- HTML of the manual query window-->
+                <div class="siimple-card-header">
+                    <label class="siimple-label">Say something in english:</label>
+                </div>
+                <div class="siimple-card-body">
+                    <form>
+                        <label class="siimple-label">/say/</label>
+                        <input type="text" 
+                            class="siimple-input" 
+                            id="param_say" 
+                            value="Welcome to the cringebox 3000" 
+                        >
+                        <button type="button"
+                            style="height: 0px; 
+                                    width: 0px; 
+                                    border: none; 
+                                    padding: 0px;" 
+                            hidefocus="true" 
+                        >
+                    </form>                    
+                </div>
+                <div class="siimple-card-footer">
+                    <div class="siimple-btn siimple-btn--orange" 
+                         onclick="httpGetFromQueryBox('say')">
+                         Send!
+                    </div>
+                </div>
+                <br>
+
+                <div class="siimple-card-header">
+                    <label class="siimple-label">Say something in p*lish:</label>
+                </div>
+                <div class="siimple-card-body">
+                    <form>
+                        <label class="siimple-label">/mow/</label>
+                        <input type="text" 
+                            class="siimple-input" 
+                            id="param_mow" 
+                            value="witaj w krindżboksie 3000" 
+                        >
+                        <button type="button"
+                            style="height: 0px; 
+                                    width: 0px; 
+                                    border: none; 
+                                    padding: 0px;" 
+                            hidefocus="true" 
+                        >
+                    </form>                    
+                </div>
+                <div class="siimple-card-footer">
+                    <div class="siimple-btn siimple-btn--orange" 
+                         onclick="httpGetFromQueryBox('mow')">
+                         Send!
+                    </div>
+                </div>
+
+                <br>
+
+                <div class="siimple-card-header">
+                    <label class="siimple-label">Say something in whatever:</label>
+                </div>
+                <div class="siimple-card-body">
+                    <form>
+                        <label class="siimple-label">/</label>
+                        <input type="text" 
+                            class="siimple-input" 
+                            id="param_guess" 
+                            value="El exterminator de demonios" 
+                        >
+                        <button type="button"
+                            style="height: 0px; 
+                                    width: 0px; 
+                                    border: none; 
+                                    padding: 0px;" 
+                            hidefocus="true" 
+                        >
+                    </form>                    
+                </div>
+                <div class="siimple-card-footer">
+                    <div class="siimple-btn siimple-btn--orange" 
+                         onclick="httpGetFromQueryBox('guess')">
+                         Send!
+                    </div>
+                </div>
+
+                <br>
+
+                <div class="siimple-card-header">
+                    <label class="siimple-label">Recent query:</label>
+                </div>
+                <div class="siimple-card-body">
+                    <textarea readonly id="queryDisp" class="siimple-textarea" rows="2" style="width:96%">
+No query performed
+                    </textarea>
+                </div>
+                <div class="siimple-card-footer">       
+                </div>
+                <br>
+                <!-- Device response window-->
+                <div class="siimple-card-header">
+                    <label class="siimple-label">Backends' recent response:</label>
+                </div> 
+                <div class="siimple-card-body">
+                    <textarea readonly id="respDisp" class="siimple-textarea" rows="5" style="width:96%">
+Nothing (yet!)
+                    </textarea>
+                </div>
+            </div>
+            <!-- HTML of the antenna control panel-->
+            <div class="siimple-grid-col siimple-grid-col--4">
+                <div class="siimple-card-header">
+                        <label class="siimple-label">
+                            Future functionalities:
+                            <span id="deviceStatusTag" class="siimple-tag siimple-tag--dark siimple-tag--rounded">Unknown</span>
+                        </label>
+                    </div>
+                    <!-- Antenna switch list, populated by JS-->
+                    <div class="siimple-card-body">
+                        <div id="antennaList" class="siimple-list siimple-list--hover">
+                                Implement something.
+                            </div>
+                    </div>
+                    <!-- Antenna switch list, populated by JS-->
+                    <div class="siimple-card-footer">
+                        
+                    </div>
+                    <br>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="siimple-footer siimple-footer" align="center">
+        Made with love using <strong>siimple</strong> - easy, lightweight and fun CSS framework
+    </div>
+</div>
+
+
+
+<script src="static/guiController.js"></script>
+<script>
+    /** global variables **/
+    var req = "";
+    var setupMode = false;
+   
+
+    /** webapp start and finish **/
+
+    function appStart(){
+        guiController = new GuiController;
+        guiController.attachResponseHandler(handleServerResponse);
+    }
+
+    function reqStrUpdate() {
+        req = guiController.getQueryFromQueryBox(queryType);
+        guiController.updateQueryDisp(req); 
+    }
+    
+    function httpGetFromQueryBox(queryType){
+        req = guiController.getQueryFromQueryBox(queryType);
+        httpGet(req,handleServerResponse);
+    }
+
+
+    function handleServerResponse(responseStatus,responseText){
+        var textToDisplay;
+        
+        if(responseStatus == 200){
+            textToDisplay = "Valid request. Response:\n" + responseText;
+            drawDeviceStatus("Online");
+        }
+
+        /** request error **/
+        else if(responseStatus == -1){
+            textToDisplay = "http request error:\n" + responseText;
+            drawDeviceStatus("Error");
+        }
+        /** request timeout **/
+        else if(responseStatus == 0){
+            textToDisplay = "http request timeout:\n" + responseText;
+            drawDeviceStatus("Offline");
+        }
+        /** Error: not found **/
+        else if(responseStatus == 404){
+            textToDisplay = "Server responded but parameter not found:\n" + responseText;
+            drawDeviceStatus("Error");
+        }
+        /** Error: different error **/
+        else {
+            textToDisplay = "Server responded with undefined error no.:\n" + responseText;
+            drawDeviceStatus("Error");
+        }
+        updateRespDisp(textToDisplay);
+    }
+
+    function httpGet(param,onLoadFunctionHandle = null)
+    {
+        guiController.updateQueryDisp(param);
+        guiController.updateRespDisp("Waiting for response...");
+        console.log("param: " + param);
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.open( "GET", param, true );
+        xmlHttp.onload = function (e) {
+            if (xmlHttp.readyState === 4) {
+                onLoadFunctionHandle(xmlHttp.status,xmlHttp.responseText)
+            }
+        };
+        xmlHttp.timeout = 60000;
+        xmlHttp.ontimeout = function (e) {
+            onLoadFunctionHandle(0,"timeout");
+        };
+        xmlHttp.onerror = function (e) {
+            onLoadFunctionHandle(-1,"Error");
+        };
+        console.log("Starting query...");
+        xmlHttp.send( null );
+    }
+
+    /** Rendering HTML section **/
+
+    function toggleSetupMode(){
+        if (setupMode == true){
+            setupMode = false;
+        }
+        else {
+            setupMode = true;
+        }
+        guiController.setSetupMode(setupMode);
+        drawAntennaList();
+    }
+
+    function updateRespDisp(text){
+        guiController.updateRespDisp(text);
+    }
+ 
+    function updateQueryDisp(text){
+        guiController.updateQueryDisp(text);
+    }    
+
+    function drawDeviceStatus(statusText){
+        guiController.drawDeviceStatus(statusText);
+    }
+
+    
+
+    
+</script>
+</body>
+</html>
+
+
+

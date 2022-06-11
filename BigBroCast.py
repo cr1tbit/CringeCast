@@ -1,9 +1,9 @@
-from flask import Flask, escape, request
+from flask import Flask, escape, request, send_from_directory
 import os
 import re
 import langdetect
 
-app = Flask(__name__)
+app = Flask(__name__,static_url_path="/static")
 
 config = {
     'max_sentence_len':16,
@@ -31,11 +31,14 @@ def speak_single_sentence(sentence_sane:str, lang_sane:str="en") -> None:
     print("Calling command:" + command)
     os.system(command)
 
-def speak(saying:str,lang:str="en") -> None:
+def speak(saying:str,lang:str) -> None:
     saying_sane = sanitize(saying)
     sentences_sane = smart_split(saying_sane)[:config['max_sentence_len']]
     if lang is None:
-        lang_sane = langdetect.detect(sentences_sane[0])
+        try:
+            lang_sane = langdetect.detect(sentences_sane[0])
+        except langdetect.lang_detect_exception.LangDetectException:
+            lang_sane = "en"
     else:
         lang_sane = sanitize(lang)
     [speak_single_sentence(s,lang_sane)
@@ -90,6 +93,7 @@ def set_vol(vol_percent:int):
     else:
         return f'invalid volume requested: {vol_percent}%'
 
+@app.route('/guess/<saying>')
 @app.route('/<saying>')
 def speak_any_lang(saying:str):
     lang = request.args.get("l",None)
@@ -97,7 +101,7 @@ def speak_any_lang(saying:str):
     return f'OK: {saying}, language is: {lang}'
 
 @app.route('/')
-def return_app_info():
-    return "available endpoints: <br> /TEXT (autodetect language, works like crap lmao) <br> /TEXT?l=XX, <br> /say/TEXT, <br> /mow/TEKST"
+def return_index():
+    return send_from_directory('static', "index.html")
 
 app.run(host='0.0.0.0',port="42069")

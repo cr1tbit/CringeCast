@@ -139,20 +139,24 @@ Nothing (yet!)
             <!-- HTML of the antenna control panel-->
             <div class="siimple-grid-col siimple-grid-col--4">
                 <div class="siimple-card-header">
+                    <label class="siimple-label">Play audio:</label>
+                    </div>
+                    <div class="siimple-card-body">
+                        <div class="siimple-btn siimple-btn--orange" 
+                            onclick="httpGet('play/welcome',handleServerResponse)">
+                            Welcome!
+                        </div>
+                        <div class="siimple-btn siimple-btn--orange" 
+                            onclick="httpGet('play/bruh',handleServerResponse)">
+                            Bruh
+                        </div>
+                    </div>
+                    <!-- Antenna switch list, populated by JS-->
+                    <div class="siimple-card-footer">
                         <label class="siimple-label">
                             Backend status: 
                             <span id="deviceStatusTag" class="siimple-tag siimple-tag--dark siimple-tag--rounded">Unknown</span>
                         </label>
-                    </div>
-                    <!-- Antenna switch list, populated by JS-->
-                    <div class="siimple-card-body">
-                        <div id="antennaList" class="siimple-list siimple-list--hover">
-                                | Place you're ad here. |
-                            </div>
-                    </div>
-                    <!-- Antenna switch list, populated by JS-->
-                    <div class="siimple-card-footer">
-                        
                     </div>
                     <br>
                 </div>

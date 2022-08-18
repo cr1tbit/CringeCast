@@ -66,9 +66,9 @@ def file(filename:str):
     return f'OK'
 '''
 
-@app.route('/favicon.ico')
+@app.route('/favicon.png')
 def serve_favicon():
-    return 'too lazy.'
+    return send_from_directory('static', "favicon.png")
 
 @app.route('/say/<saying>')
 def say(saying:str):

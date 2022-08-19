@@ -23,6 +23,7 @@ class GuiController{
         }
 
         document.getElementById("audioFilesDisp").innerHTML = domContent
+        document.getElementById("respDisp").innerHTML = "Button list retrieved."
     }
 
 

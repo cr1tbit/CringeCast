@@ -29,7 +29,7 @@ def smart_split(s:str) -> list:
 
 def speak_single_sentence(sentence_sane:str, lang_sane:str="en") -> None:
     command = f'shellscripts/speak.sh "{sentence_sane}" {lang_sane}'
-    print("Calling command:" + command)
+    # print("Calling command:" + command)
     os.system(command)
 
 def speak(saying:str,lang:str) -> None:
@@ -49,7 +49,7 @@ def speak(saying:str,lang:str) -> None:
 def play_file(filename_no_ext:str) -> None:
     filename_sane = sanitize(filename_no_ext)+".mp3"
     command = f'shellscripts/play.sh audio_files/{filename_sane}'
-    print("Calling command:" + command)
+    # print("Calling command:" + command)
     os.system(command) 
 
 '''

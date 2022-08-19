@@ -8,7 +8,13 @@
   <meta name="description" content="Cast cringe through your speakers">
   <meta name="author" content="critbit">
   <link rel="stylesheet" href="static/siimple.min.css">
-  <link rel="icon" href="favicon.png">
+  <style>
+	  .highlight {
+		 background-color:#DEDEDE;
+	  }
+  </style>
+</head>
+<link rel="icon" href="favicon.png">
 </head>
 
 <body onload="appStart()" onunload="appClose()">
@@ -149,6 +155,15 @@ Nothing (yet!)
                 <div class="siimple-card-body" id="audioFilesDisp">
 Here be files to play
                 </div>
+                <div class="siimple-card-header">
+                    <label class="siimple-label">Drop your tune:</label>
+                </div>
+                <div id="drop-area" class="siimple-card-body">
+				    <form class="my-form">
+				      <p>Upload your mp3 file by dragging and dropping onto the this region</p>
+				      <input type="file" accept="audio/mpeg3" onchange="handleFiles(this.files)">
+				    </form>
+                </div>
                     <!-- Antenna switch list, populated by JS-->
                 <div class="siimple-card-footer">
                     <label class="siimple-label">
@@ -213,12 +228,12 @@ Here be files to play
             textToDisplay = "Server responded but parameter not found:\n" + responseText;
             drawDeviceStatus("Error");
         }
-        /** Error: different error **/
+        /** Error: different error **/  
         else {
             textToDisplay = "Server responded with undefined error no.:\n" + responseText;
             drawDeviceStatus("Error");
         }
-        updateRespDisp(textToDisplay);
+        updateRespDisp(textToDisplay); 
     }
 
     function httpGet(controller, param,onLoadFunctionHandle = null)
@@ -262,8 +277,61 @@ Here be files to play
     function drawDeviceStatus(statusText){
         guiController.drawDeviceStatus(statusText);
     }
+	
+	/** Drag and drop **/
+	
+	let dropArea = document.getElementById('drop-area');
+	
+	['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+	  dropArea.addEventListener(eventName, preventDefaults, false)
+	});
+	
+	['dragenter', 'dragover'].forEach(eventName => {
+	  dropArea.addEventListener(eventName, highlight, false)
+	});
 
-    
+	;['dragleave', 'drop'].forEach(eventName => {
+	  dropArea.addEventListener(eventName, unhighlight, false)
+	});
+	
+	function preventDefaults (e) {
+	  e.preventDefault()
+	  e.stopPropagation()
+	}
+
+	function highlight(e) {
+	  dropArea.classList.add('highlight')
+	}
+
+	function unhighlight(e) {
+	  dropArea.classList.remove('highlight')
+	}
+	
+	dropArea.addEventListener('drop', handleDrop, false);
+
+	function handleDrop(e) {
+	  let dt = e.dataTransfer
+	  let files = dt.files
+	  handleFiles(files)
+	}
+	
+	function handleFiles(files) {
+	  ([...files]).forEach(uploadFile)
+	}
+	
+	function uploadFile(file) {
+	  let url = '/uploader'
+	  let formData = new FormData()
+
+	  formData.append('file', file)
+
+	  fetch(url, {
+	    method: 'POST',
+	    body: formData
+	  })
+	  .then(() => { /* Done. Inform the user */ })
+	  .catch(() => { /* Error. Inform the user */ })
+	}
 
     
 </script>

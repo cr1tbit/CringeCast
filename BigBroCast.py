@@ -85,6 +85,14 @@ def mow(saying:str):
 def play(filename:str):
     play_file(filename)
     return f'OK: {filename}.mp3'
+    
+@app.route('/uploader', methods=['POST'])
+def upload_file():
+    if request.method == 'POST':
+        f = request.files['file']
+        f.save("audio_files/temp.mp3")
+        play_file("temp")
+        return 'file uploaded'
 
 @app.route('/getFilelist')
 def getFilelist():

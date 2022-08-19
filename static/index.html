@@ -5,12 +5,11 @@
   <meta charset="utf-8">
 
   <title>BigBroCast</title>
-  <meta name="description" content="The HTML5 Herald">
-  <meta name="author" content="SitePoint">
-
+  <meta name="description" content="Cast cringe through your speakers">
+  <meta name="author" content="critbit">
   <link rel="stylesheet" href="static/siimple.min.css">
-</head>
   <link rel="icon" href="favicon.png">
+</head>
 
 <body onload="appStart()" onunload="appClose()">
 <div style="max-width:900px; margin:0 auto;" >
@@ -142,20 +141,13 @@ Nothing (yet!)
                     <label class="siimple-label">Set volume:</label>
                 </div>
                 <div class="siimple-card-body">
-                    <input type="range" class="slider" value="50" onchange="httpGet('vol/' + this.value,handleServerResponse)"/>
+                    <input type="range" class="slider" value="50" onchange="httpGet(null, 'vol/' + this.value, handleServerResponse)"/>
                 </div>
                 <div class="siimple-card-header">
                     <label class="siimple-label">Play audio files:</label>
                 </div>
-                <div class="siimple-card-body">
-                    <div class="siimple-btn siimple-btn--orange" 
-                        onclick="httpGet('play/welcome',handleServerResponse)">
-                        Welcome!
-                    </div>
-                    <div class="siimple-btn siimple-btn--orange" 
-                        onclick="httpGet('play/bruh',handleServerResponse)">
-                        Bruh
-                    </div>
+                <div class="siimple-card-body" id="audioFilesDisp">
+Here be files to play
                 </div>
                     <!-- Antenna switch list, populated by JS-->
                 <div class="siimple-card-footer">
@@ -179,11 +171,8 @@ Nothing (yet!)
 <script src="static/guiController.js"></script>
 <script>
     /** global variables **/
-    var req = "";
-    var setupMode = false;
-   
+    var req = "";   
 
-    /** webapp start and finish **/
 
     function appStart(){
         guiController = new GuiController;
@@ -197,7 +186,7 @@ Nothing (yet!)
     
     function httpGetFromQueryBox(queryType){
         req = guiController.getQueryFromQueryBox(queryType);
-        httpGet(req,handleServerResponse);
+        httpGet(guiController, req,handleServerResponse);
     }
 
 
@@ -232,11 +221,17 @@ Nothing (yet!)
         updateRespDisp(textToDisplay);
     }
 
-    function httpGet(param,onLoadFunctionHandle = null)
+    function httpGet(controller, param,onLoadFunctionHandle = null)
     {
-        guiController.updateQueryDisp(param);
-        guiController.updateRespDisp("Waiting for response...");
-        console.log("param: " + param);
+        console.log(controller)
+
+        if (controller == undefined) {
+            controller = guiController
+        }
+
+        controller.updateQueryDisp(param);
+        controller.updateRespDisp("Waiting for response...");
+        // console.log("param: " + param);
         var xmlHttp = new XMLHttpRequest();
         xmlHttp.open( "GET", param, true );
         xmlHttp.onload = function (e) {
@@ -251,7 +246,7 @@ Nothing (yet!)
         xmlHttp.onerror = function (e) {
             onLoadFunctionHandle(-1,"Error");
         };
-        console.log("Starting query...");
+        // console.log("Starting query...");
         xmlHttp.send( null );
     }
 

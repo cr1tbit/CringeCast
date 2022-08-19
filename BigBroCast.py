@@ -2,6 +2,7 @@ from flask import Flask, escape, request, send_from_directory
 import os
 import re
 import langdetect
+import json
 
 app = Flask(__name__,static_url_path="/static")
 
@@ -84,6 +85,15 @@ def mow(saying:str):
 def play(filename:str):
     play_file(filename)
     return f'OK: {filename}.mp3'
+
+@app.route('/getFilelist')
+def getFilelist():
+
+    audio_names = [f.split(".")[0] \
+        for f in os.listdir("audio_files")\
+        if f.split(".")[1] == "mp3"]
+
+    return json.dumps(audio_names)
 
 @app.route('/vol/<int:vol_percent>')
 def set_vol(vol_percent:int):

@@ -1,9 +1,37 @@
 class GuiController{
     constructor(){
-        console.log("guiController constructor called...")
+        // console.log("guiController constructor called...")
         this.jsonGuiTree = this.getJsonGuiTree()
         this.defaultResponseHandler = null
+        this.initPopulateButtons()
     }
+
+    cbPopulateButtons(responseStatus,responseText){
+        // console.log(responseText)
+        var domContent = ""
+        
+        var buttonList = JSON.parse(responseText)
+
+        // console.log(buttonList)
+
+        for (const b in buttonList) {
+            var butName = buttonList[b]
+
+            domContent += "<div class=\"siimple-btn siimple-btn--orange\" \
+            onclick=\"httpGet(null, 'play/" + butName + "',handleServerResponse)\">\
+            " + butName + "</div>"
+        }
+
+        document.getElementById("audioFilesDisp").innerHTML = domContent
+    }
+
+
+    initPopulateButtons(){
+        var ButtonList = httpGet(this, "getFilelist",this.cbPopulateButtons)
+        this.jsonGuiTree.audioFilesBox.innerHTML = "requesting audio files list..."
+    }
+
+
 
     attachResponseHandler(handler){
         this.defaultResponseHandler = handler
@@ -32,6 +60,7 @@ class GuiController{
             antControlBox :{
                 tagDeviceStatus : document.getElementById("deviceStatusTag")
             },
+            audioFilesBox : document.getElementById("audioFilesDisp")
         }
     }
 
@@ -53,7 +82,7 @@ class GuiController{
             .queryDisplayBox
             .textAreaQueryDisp
             .innerHTML = text
-        console.log("query:\n " + text);
+        // console.log("query:\n " + text);
     }
 
     updateRespDisp(text){
@@ -61,7 +90,7 @@ class GuiController{
             .responseBox
             .textAreaRespDisp
             .innerHTML = text
-            console.log("response:\n " + text);
+            // console.log("response:\n " + text);
     }
 
     drawDeviceStatus(statusText){

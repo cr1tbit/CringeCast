@@ -1,10 +1,12 @@
 from flask import Flask, escape, request, send_from_directory
+import werkzeug
 import os
 import re
 import langdetect
 import json
 
 app = Flask(__name__,static_url_path="/static")
+app.config['MAX_CONTENT_LENGTH'] = 1 * 1000 * 1000
 
 config = {
     'max_sentence_len':16,
@@ -90,8 +92,8 @@ def play(filename:str):
 def upload_file():
     if request.method == 'POST':
         f = request.files['file']
-        f.save("audio_files/temp.mp3")
-        play_file("temp")
+        f.save("audio_files/recent_upload.mp3")
+        play_file("recent_upload")
         return 'file uploaded'
 
 @app.route('/getFilelist')

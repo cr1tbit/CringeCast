@@ -15,7 +15,7 @@ config = {
 }
 
 def sanitize(s:str)-> str:
-    return re.sub('[^0-9a-zA-Z,.?!\'żźćńółęąśŻŹĆĄŚĘŁÓŃ ]+', '', s) 
+    return re.sub('[^0-9a-zA-Z,.?!\'żźćńółęąśŻŹĆĄŚĘŁÓŃ_ ]+', '', s) 
 
 def smart_split(s:str) -> list:
     # since google voice API doesn't respond to strings longer than 200-chars

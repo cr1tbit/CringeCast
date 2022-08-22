@@ -4,6 +4,7 @@ import os
 import re
 import langdetect
 import json
+import platform
 
 app = Flask(__name__,static_url_path="/static")
 app.config['MAX_CONTENT_LENGTH'] = 1 * 1000 * 1000
@@ -30,7 +31,12 @@ def smart_split(s:str) -> list:
 
 
 def speak_single_sentence(sentence_sane:str, lang_sane:str="en") -> None:
-    command = f'shellscripts/speak.sh "{sentence_sane}" {lang_sane}'
+    if is_arm:
+        script_name = "speak_arm.sh"
+    else:
+        script_name = "speak.sh"
+
+    command = f'shellscripts/{script_name} "{sentence_sane}" {lang_sane}'
     # print("Calling command:" + command)
     os.system(command)
 
@@ -50,7 +56,13 @@ def speak(saying:str,lang:str) -> None:
 
 def play_file(filename_no_ext:str) -> None:
     filename_sane = sanitize(filename_no_ext)+".mp3"
-    command = f'shellscripts/play.sh audio_files/{filename_sane}'
+
+    if is_arm:
+        script_name = "play_arm.sh"
+    else:
+        script_name = "play.sh"
+
+    command = f'shellscripts/{script_name} audio_files/{filename_sane}'
     # print("Calling command:" + command)
     os.system(command) 
 
@@ -107,8 +119,13 @@ def getFilelist():
 
 @app.route('/vol/<int:vol_percent>')
 def set_vol(vol_percent:int):
+    if is_arm:
+        script_name = "set_vol_arm.sh"
+    else:
+        script_name = "set_vol.sh"
+
     if 0 <= vol_percent <= 100:
-        os.system(f'shellscripts/set_vol.sh {vol_percent}')
+        os.system(f'shellscripts/{script_name} {vol_percent}')
         return f'volume set ok: {vol_percent}%'
     else:
         return f'invalid volume requested: {vol_percent}%'
@@ -124,4 +141,6 @@ def speak_any_lang(saying:str):
 def return_index():
     return send_from_directory('static', "index.html")
 
+is_arm = "arm" in platform.processor()
+print(f"is arm {is_arm}")
 app.run(host='0.0.0.0',port="42069")

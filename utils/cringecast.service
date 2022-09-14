@@ -1,5 +1,5 @@
 [Unit]
-Description=BigBroCast service
+Description=CringeCast service
 After=network.target
 StartLimitIntervalSec=0
 
@@ -8,8 +8,8 @@ Type=simple
 Restart=always
 RestartSec=10
 User=pi
-WorkingDirectory=/home/pi/BigBroCast
-ExecStart=/bin/bash /home/pi/BigBroCast/run.sh
+WorkingDirectory=/home/pi/CringeCast
+ExecStart=/bin/bash /home/pi/CringeCast/run.sh
 
 [Install]
 WantedBy=multi-user.target

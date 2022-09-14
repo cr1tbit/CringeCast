@@ -1,13 +1,15 @@
-from flask import Flask, escape, request, send_from_directory, g
+from flask import Flask, escape, request, send_from_directory, g, session
 # import werkzeug
 import json
 
 import CringeCast.shell_wrappers as shell_wrappers
 import os
 
+import datetime
+
 app = Flask(__name__,static_url_path="/static")
 app.config['MAX_CONTENT_LENGTH'] = 1 * 1000 * 1000
-app.super_secret_key="test"
+app.super_secret_key="perystaltyka"
 
 
 
@@ -25,10 +27,74 @@ def file(filename:str):
 
     return f'OK'
 '''
-# @app.before_request
-# def assert_teapot_mode():
-#     if g.in_teapot_mode == True:
-#         return "I'm sorry, I'm a teapot ", 418
+
+class TeapotModeHandler:
+
+    _teapot_mode = False
+
+    # This functionality is to prevent the cringebox from being raided,
+    # or to mute it during events, or if someone is acting particularly
+    # assholey.
+
+    # If user is privilleged and knows the super_secret_key, he may
+    # override this mode though. Infrastructure may do the same.
+
+    # On 1st click, cringebox is timed out for 15mins. If after 15mins
+    # The raid still persists, user may request mute again, and this time
+    # the device will be muted for 4 hours.
+
+    _unmute_at = datetime.datetime.utcfromtimestamp(0) 
+
+    def in_teapot_mode(self):
+        if datetime.datetime.now() < self._unmute_at:
+            return True
+        else:
+            return False
+
+    def set_teapot_mode(self):
+
+        #this means the user requested the mute 2 times in a row
+        if datetime.datetime.now() - self._unmute_at < datetime.timedelta(minutes=20):
+            self._unmute_at = datetime.datetime.now() + datetime.timedelta(hours=4)
+        else:
+            self._unmute_at = datetime.datetime.now() + datetime.timedelta(minutes=15)            
+
+    def disable_teapot_mode(self):
+        self._unmute_at = None
+
+    def get_remaining_teapot_time(self) ->str:
+        if datetime.datetime.now() < self._unmute_at:
+            return str(self._unmute_at - datetime.datetime.now())
+        else:
+            return "0"
+
+    
+tmHandler = TeapotModeHandler()
+
+@app.before_request
+def assert_request_permissions():
+    g.privilleged = False
+    if request.path == "/" or request.path.split("/")[1] == "static":
+        #always serve frontend stuff
+        return
+    if request.args.get("super_secret_key","") == app.super_secret_key:
+        #if user knows the secret key, let him do anything
+        g.privilleged = True
+        return
+    if tmHandler.in_teapot_mode():
+        return f"I'm sorry, I'm a teapot for next {tmHandler.get_remaining_teapot_time()}", 418
+
+@app.route('/teapot/<target_state>')
+def setup_teapot_mode(target_state:str):
+    if target_state == "on":
+        tmHandler.set_teapot_mode()
+        return "Teapot mode set"
+    elif target_state == "off":
+        tmHandler.disable_teapot_mode()
+        return "Teapot mode disabled"
+    else:
+        return "Invalid request",500
+
 
 @app.route('/favicon.png')
 def serve_favicon():

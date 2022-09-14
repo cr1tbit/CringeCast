@@ -148,7 +148,8 @@ Nothing (yet!)
                 </div>
                 <div class="siimple-card-body">
                     <input type="range" class="slider" value="50" onchange="httpGet(null, 'vol/' + this.value, handleServerResponse)"/>
-                </div>
+                    <div class="siimple-btn siimple-btn--red" onclick="httpGet(null, 'teapot/on', handleServerResponse)"> Set teapot mode! </div>
+                </div>                
                 <div class="siimple-card-header">
                     <label class="siimple-label">Play audio files:</label>
                 </div>
@@ -164,7 +165,6 @@ Here be files to play
 				      <input type="file" accept="audio/mpeg3" onchange="handleFiles(this.files)">
 				    </form>
                 </div>
-                    <!-- Antenna switch list, populated by JS-->
                 <div class="siimple-card-footer">
                     <label class="siimple-label">
                         Recent backend status: 
@@ -227,6 +227,11 @@ Here be files to play
         else if(responseStatus == 404){
             textToDisplay = "Server responded but parameter not found:\n" + responseText;
             drawDeviceStatus("Error");
+        }
+        /** Error: in teapot mode **/
+        else if(responseStatus == 418){
+            textToDisplay = "Server is a teapot, frick off:\n" + responseText;
+            drawDeviceStatus("Teapot");
         }
         /** Error: different error **/  
         else {

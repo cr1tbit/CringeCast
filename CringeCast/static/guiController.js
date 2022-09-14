@@ -106,6 +106,10 @@ class GuiController{
             case "Error":
                 statusColor = "error"
                 break;
+            case "Teapot":
+                statusColor = "warning"
+                statusText = "I'm a teapot!";
+                break;
             default:
                 statusText = "Unknown";
                 statusColor = "light";

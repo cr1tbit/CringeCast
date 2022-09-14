@@ -10,8 +10,7 @@ import datetime
 app = Flask(__name__,static_url_path="/static")
 app.config['MAX_CONTENT_LENGTH'] = 1 * 1000 * 1000
 app.super_secret_key="perystaltyka"
-
-
+app.privilleged_volume = 80
 
 '''
 @app.route('/file/<filename>')
@@ -51,7 +50,9 @@ class TeapotModeHandler:
         else:
             return False
 
-    def set_teapot_mode(self):
+    def set_teapot_mode(self,permanent=False):
+        if permanent:
+            self._unmute_at = datetime.datetime.now() + datetime.timedelta(days=69)
 
         #this means the user requested the mute 2 times in a row
         if datetime.datetime.now() - self._unmute_at < datetime.timedelta(minutes=20):
@@ -77,11 +78,16 @@ def assert_request_permissions():
     if request.path == "/" or request.path.split("/")[1] == "static":
         #always serve frontend stuff
         return
+
     if request.args.get("super_secret_key","") == app.super_secret_key:
         #if user knows the secret key, let him do anything
         g.privilleged = True
         return
-    if tmHandler.in_teapot_mode():
+
+    if g.privilleged and "critical" in request.args:
+        shell_wrappers.set_volume(app.privilleged_volume)
+
+    if tmHandler.in_teapot_mode() and not g.privilleged:
         return f"I'm sorry, I'm a teapot for next {tmHandler.get_remaining_teapot_time()}", 418
 
 @app.route('/teapot/<target_state>')
@@ -92,6 +98,9 @@ def setup_teapot_mode(target_state:str):
     elif target_state == "off":
         tmHandler.disable_teapot_mode()
         return "Teapot mode disabled"
+    elif target_state == "permanent" and g.privilleged:
+        tmHandler.set_teapot_mode(permanent=True)
+        return "I'm permanently teapot now."
     else:
         return "Invalid request",500
 

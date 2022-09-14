@@ -7,6 +7,7 @@
   <title>CringeCast</title>
   <meta name="description" content="Cast cringe through your speakers">
   <meta name="author" content="critbit">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
   <link rel="stylesheet" href="static/siimple.min.css">
   <style>
 	  .highlight {
@@ -230,7 +231,7 @@ Here be files to play
         }
         /** Error: in teapot mode **/
         else if(responseStatus == 418){
-            textToDisplay = "Server is a teapot, frick off:\n" + responseText;
+            textToDisplay = "Welp, this is awkward:\n" + responseText;
             drawDeviceStatus("Teapot");
         }
         /** Error: different error **/  

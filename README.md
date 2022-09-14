@@ -1,16 +1,15 @@
 # CringeCast - cast cringe through your speakers, as rendered on your big Bro's cloud
 
-This project allows you to make sound through the host device's speakers, either playing some .mp3 files, or just speech-synthesized phrases, using google translate's unsecured API endpoint lmao.
+This project allows you to make sound through the host device's speakers, either playing some .mp3 files, or just speech-synthesized phrases, using `google translate`'s unsecured API endpoint lmao.
 
-(partial) API:
-`/*` - say anything, try to guess the language
-`/*?l=xx` - say anything, but force language
-`/say` - say anything, in english
-`/mow/` - say anything, in polish
-`/play` - play a predefined file from `audio_files` directory
-`/vol` - set volume, range 0-100
-
-The project also hosts an simple frontend, on `/`
+API (GET requests):
+* `/` - frontend may be found here
+* `/*` - say anything, try to guess the language
+* `/*?l=xx` - say anything, but force specific language
+* `/say/` - say anything, in english
+* `/mow/` - say anything, in polish
+* `/play/` - play a predefined file from `audio_files` directory
+* `/vol/` - set volume, range 0-100
 
 ## Project history, or "why is it so shitty.txt"
 

@@ -3,6 +3,7 @@ import re
 import platform
 import os
 import langdetect
+import subprocess
 
 is_arm = "arm" in platform.processor()
 print(f"is arm {is_arm}")
@@ -63,10 +64,11 @@ def play_file(filename_no_ext:str) -> None:
     else:
         script_name = "play.sh"
 
-    command = f'{shell_utils_dir}/{script_name} audio_files/{filename_sane}'
     # print("Calling command:" + command)
-    os.system(command) 
+    subprocess.run([f"{shell_utils_dir}/{script_name}", f"audio_files/{filename_sane}"])
 
+def kill() -> None:
+    os.system(f'{shell_utils_dir}/kill.sh')
     
 def set_volume(volume:int) -> None:
     if is_arm:

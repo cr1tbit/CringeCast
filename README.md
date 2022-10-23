@@ -10,6 +10,8 @@ API (GET requests):
 * `/mow/` - say anything, in polish
 * `/play/` - play a predefined file from `audio_files` directory
 * `/vol/` - set volume, range 0-100
+* `/stop/` - stop playing all
+
 
 ## Project history, or "why is it so shitty.txt"
 

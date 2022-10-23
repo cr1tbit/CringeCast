@@ -113,6 +113,11 @@ def serve_favicon():
 def say(saying:str):
     shell_wrappers.speak(saying,"en")
     return f'OK: {saying}'
+    
+@app.route('/stop')
+def kill():
+    shell_wrappers.kill()
+    return f'OK: Stopped'
 
 @app.route('/mow/<saying>')
 def mow(saying:str):

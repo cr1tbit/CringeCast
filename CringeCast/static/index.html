@@ -148,8 +148,10 @@ Nothing (yet!)
                     <label class="siimple-label">Set volume:</label>
                 </div>
                 <div class="siimple-card-body">
-                    <input type="range" class="slider" value="50" onchange="httpGet(null, 'vol/' + this.value, handleServerResponse)"/>
-                    <div class="siimple-btn siimple-btn--red" onclick="httpGet(null, 'teapot/on', handleServerResponse)"> Set teapot mode! </div>
+                    <input type="range" class="slider" value="50" 
+                        onchange="httpGet(null, 'vol/' + this.value, handleServerResponse)"/>
+                    <div class="siimple-btn siimple-btn--red" 
+                        onclick="httpGet(null, 'teapot/on', handleServerResponse)"> Set teapot mode! </div>
                 </div>                
                 <div class="siimple-card-header">
                     <label class="siimple-label">Play audio files:</label>

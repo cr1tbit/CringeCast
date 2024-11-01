@@ -17,7 +17,7 @@ config = {
 }
 
 def sanitize(s:str)-> str:
-    return re.sub('[^0-9a-zA-Z,.?!\'żźćńółęąśŻŹĆĄŚĘŁÓŃ_ ]+', '', s) 
+    return re.sub('[^0-9a-zA-Z,.?!\'żźćńółęąśŻŹĆĄŚĘŁÓŃ_\- ]+', '', s) 
 
 def smart_split(s:str) -> list:
     # since google voice API doesn't respond to strings longer than 200-chars
@@ -56,7 +56,9 @@ def speak(saying:str,lang:str) -> None:
         for s in sentences_sane
     ]
 
-def play_file(filename_no_ext:str) -> None:
+def play_file(category, filename_no_ext:str) -> None:
+    # print("Playing file: " + filename_no_ext)
+    category_sane = sanitize(category)
     filename_sane = sanitize(filename_no_ext)+".mp3"
 
     if is_arm:
@@ -64,11 +66,23 @@ def play_file(filename_no_ext:str) -> None:
     else:
         script_name = "play.sh"
 
-    # print("Calling command:" + command)
-    subprocess.run([f"{shell_utils_dir}/{script_name}", f"audio_files/{filename_sane}"])
+    print("Calling command:" + category_sane + "/" + filename_sane)
+    subprocess.run([
+        f"{shell_utils_dir}/{script_name}", 
+        f"audio_files/{category}/{filename_sane}"])
 
 def kill() -> None:
     os.system(f'{shell_utils_dir}/kill.sh')
+
+def get_volume() -> int:
+    if is_arm:
+        script_name = "get_vol.sh"
+    else:
+        script_name = "get_vol.sh"
+
+    return_val = os.popen(f'{shell_utils_dir}/{script_name}').read()
+    print(f"val: {return_val}")
+    return int(return_val)
     
 def set_volume(volume:int) -> None:
     if is_arm:

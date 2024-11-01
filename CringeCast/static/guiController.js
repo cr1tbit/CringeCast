@@ -1,3 +1,11 @@
+
+
+function getAudioButtonHtml(category, filename){
+    return "<div class=\"siimple-btn siimple-btn--orange\" \
+    onclick=\"httpGet(null, 'play/" + category + "/" + filename + "',handleServerResponse)\">\
+    " + filename + "</div>"
+}
+
 class GuiController{
     constructor(){
         // console.log("guiController constructor called...")
@@ -10,29 +18,24 @@ class GuiController{
         // console.log(responseText)
         var domContent = ""
         
-        var buttonList = JSON.parse(responseText)
+        var buttonJson = JSON.parse(responseText)
+        console.log(buttonJson)
 
-        // console.log(buttonList)
-
-        for (const b in buttonList) {
-            var butName = buttonList[b]
-
-            domContent += "<div class=\"siimple-btn siimple-btn--orange\" \
-            onclick=\"httpGet(null, 'play/" + butName + "',handleServerResponse)\">\
-            " + butName + "</div>"
-        }
+        for (const category in buttonJson) {
+            domContent += "<h3>" + category + "</h3> <br/>"
+            for (const b in buttonJson[category]) {
+                domContent += getAudioButtonHtml(category,buttonJson[category][b])
+            }
+        } 
 
         document.getElementById("audioFilesDisp").innerHTML = domContent
         document.getElementById("respDisp").innerHTML = "Button list retrieved."
     }
 
-
     initPopulateButtons(){
         var ButtonList = httpGet(this, "getFilelist",this.cbPopulateButtons)
         this.jsonGuiTree.audioFilesBox.innerHTML = "requesting audio files list..."
     }
-
-
 
     attachResponseHandler(handler){
         this.defaultResponseHandler = handler

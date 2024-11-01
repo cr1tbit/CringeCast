@@ -1,4 +1,4 @@
-from flask import Flask, escape, request, send_from_directory, g, session
+from flask import Flask, request, send_from_directory, g, session
 # import werkzeug
 import json
 
@@ -124,10 +124,10 @@ def mow(saying:str):
     shell_wrappers.speak(saying,"pl")
     return f'OK: {saying}'
 
-@app.route('/play/<filename>')
-def play(filename:str):
-    shell_wrappers.play_file(filename)
-    return f'OK: {filename}.mp3'
+@app.route('/play/<category>/<filename>')
+def play(category,filename:str):
+    shell_wrappers.play_file(category, filename)
+    return f'OK: {category}/{filename}.mp3'
     
 @app.route('/uploader', methods=['POST'])
 def upload_file():
@@ -139,11 +139,19 @@ def upload_file():
 
 @app.route('/getFilelist')
 def getFilelist():
-    audio_names = [f.split(".")[0] \
-        for f in os.listdir("audio_files")\
-        if f.split(".")[1] == "mp3"]
+    file_dict = {}
 
-    return json.dumps(audio_names)
+    for item in os.listdir("audio_files"):
+        item_path = os.path.join("audio_files", item)
+        if os.path.isdir(item_path):
+            file_dict[item] = [f.split(".")[0] for f in os.listdir(item_path) if f.endswith(".mp3")]
+
+    return json.dumps(file_dict)
+
+@app.route('/vol')
+def get_vol():
+    vol = shell_wrappers.get_volume()
+    return f'{vol}'
 
 @app.route('/vol/<int:vol_percent>')
 def set_vol(vol_percent:int):

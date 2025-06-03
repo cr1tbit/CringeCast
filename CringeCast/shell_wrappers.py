@@ -2,7 +2,7 @@
 import re
 import platform
 import os
-import langdetect
+import py3langid
 import subprocess
 
 is_arm = "arm" in platform.processor()
@@ -17,7 +17,7 @@ config = {
 }
 
 def sanitize(s:str)-> str:
-    return re.sub('[^0-9a-zA-Z,.?!\'żźćńółęąśŻŹĆĄŚĘŁÓŃ_\- ]+', '', s) 
+    return re.sub('[^0-9a-zA-Z,.?!\'żźćńółęąśŻŹĆĄŚĘŁÓŃ_\- \u4e00-\u9fff]+', '', s) 
 
 def smart_split(s:str) -> list:
     # since google voice API doesn't respond to strings longer than 200-chars
@@ -46,10 +46,7 @@ def speak(saying:str,lang:str) -> None:
     saying_sane = sanitize(saying)
     sentences_sane = smart_split(saying_sane)[:config['max_sentence_len']]
     if lang is None:
-        try:
-            lang_sane = langdetect.detect(sentences_sane[0])
-        except langdetect.lang_detect_exception.LangDetectException:
-            lang_sane = "en"
+        lang_sane = py3langid.classify(sentences_sane[0])[0]
     else:
         lang_sane = sanitize(lang)
     [speak_single_sentence(s,lang_sane)

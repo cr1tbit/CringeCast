@@ -1,2 +1,4 @@
 __pycache__
 audio_files/*
+venv
+.python-version

@@ -9,7 +9,7 @@ import datetime
 
 app = Flask(__name__,static_url_path="/static")
 app.config['MAX_CONTENT_LENGTH'] = 1 * 1000 * 1000
-app.super_secret_key="perystaltyka"
+app.super_secret_key = os.environ.get("CRINGECAST_SUPER_SECRET_KEY", "change-me")
 app.privilleged_volume = 80
 
 '''

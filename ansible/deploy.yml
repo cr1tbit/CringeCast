@@ -1,0 +1,116 @@
+- name: Deploy CringeCast Rust on NanoPi
+  hosts: cringebox
+  gather_facts: false
+  vars_files:
+    - group_vars/all/secrets.yml
+  vars:
+    app_user: pi
+    app_dir: /home/pi/cringecast-rust
+    app_port: 42069
+    local_project_root: "{{ playbook_dir }}/.."
+    local_binary: "{{ local_project_root }}/rust-rewrite/target/armv7-unknown-linux-musleabihf/release/cringecast-server"
+
+  tasks:
+    - name: Build ARM static binary locally via zig
+      ansible.builtin.command: >-
+        bash -lc 'PATH=/home/critbit/.local/zig:$PATH cargo zigbuild --release --target armv7-unknown-linux-musleabihf'
+      args:
+        chdir: "{{ local_project_root }}/rust-rewrite"
+      delegate_to: localhost
+
+    - name: Ensure runtime packages installed
+      ansible.builtin.raw: |
+        set -e
+        sudo apt-get update -y
+        sudo DEBIAN_FRONTEND=noninteractive apt-get install -y mpg123 alsa-utils rsync curl
+
+    - name: Ensure target directories exist
+      ansible.builtin.raw: |
+        set -e
+        sudo mkdir -p {{ app_dir }}/bin {{ app_dir }}/CringeCast {{ app_dir }}/audio_files
+        sudo chown -R {{ app_user }}:{{ app_user }} {{ app_dir }}
+
+    - name: Sync binary
+      ansible.builtin.command: >-
+        rsync -az --chmod=755
+        {{ local_binary }}
+        {{ hostvars[inventory_hostname].ansible_user }}@{{ hostvars[inventory_hostname].ansible_host }}:{{ app_dir }}/bin/cringecast-server
+      delegate_to: localhost
+
+    - name: Sync frontend static files
+      ansible.builtin.command: >-
+        rsync -az --delete
+        {{ local_project_root }}/CringeCast/static/
+        {{ hostvars[inventory_hostname].ansible_user }}@{{ hostvars[inventory_hostname].ansible_host }}:{{ app_dir }}/CringeCast/static/
+      delegate_to: localhost
+
+    - name: Sync shell scripts
+      ansible.builtin.command: >-
+        rsync -az --delete
+        {{ local_project_root }}/CringeCast/shellscripts/
+        {{ hostvars[inventory_hostname].ansible_user }}@{{ hostvars[inventory_hostname].ansible_host }}:{{ app_dir }}/CringeCast/shellscripts/
+      delegate_to: localhost
+
+    - name: Sync audio files
+      ansible.builtin.command: >-
+        rsync -az
+        {{ local_project_root }}/audio_files/
+        {{ hostvars[inventory_hostname].ansible_user }}@{{ hostvars[inventory_hostname].ansible_host }}:{{ app_dir }}/audio_files/
+      delegate_to: localhost
+
+    - name: Ensure scripts executable
+      ansible.builtin.raw: |
+        set -e
+        chmod +x {{ app_dir }}/CringeCast/shellscripts/*.sh
+
+    - name: Install systemd unit
+      ansible.builtin.raw: |
+        set -e
+        sudo tee /etc/systemd/system/cringecast-rust.service >/dev/null <<'UNIT'
+        [Unit]
+        Description=CringeCast Rust service
+        After=network.target sound.target
+
+        [Service]
+        Type=simple
+        User={{ app_user }}
+        WorkingDirectory={{ app_dir }}
+        Environment=CRINGECAST_ROOT={{ app_dir }}
+        Environment=CRINGECAST_PORT={{ app_port }}
+        Environment=CRINGECAST_SUPER_SECRET_KEY={{ cringecast_super_secret_key }}
+        ExecStart={{ app_dir }}/bin/cringecast-server
+        Restart=always
+        RestartSec=5
+
+        [Install]
+        WantedBy=multi-user.target
+        UNIT
+
+    - name: Stop old python service if present
+      ansible.builtin.raw: |
+        set -e
+        sudo systemctl disable --now cringecast.service || true
+        sudo systemctl disable --now cringecast || true
+
+    - name: Reload systemd and restart Rust service
+      ansible.builtin.raw: |
+        set -e
+        sudo systemctl daemon-reload
+        sudo systemctl enable cringecast-rust.service
+        sudo systemctl restart cringecast-rust.service
+
+    - name: Check service status
+      ansible.builtin.raw: sudo systemctl --no-pager --full status cringecast-rust.service | head -n 60
+      register: service_status
+
+    - name: Print service status
+      ansible.builtin.debug:
+        var: service_status.stdout_lines
+
+    - name: Probe endpoint
+      ansible.builtin.raw: curl -fsS http://127.0.0.1:{{ app_port }}/vol
+      register: probe
+
+    - name: Print probe response
+      ansible.builtin.debug:
+        msg: "Probe body={{ probe.stdout | trim }}"

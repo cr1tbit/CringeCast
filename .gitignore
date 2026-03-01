@@ -2,3 +2,8 @@ __pycache__
 audio_files/*
 venv
 .python-version
+ansible/inventory/hosts.ini
+ansible/group_vars/all/secrets.yml
+CringeCast/static/assets/
+CringeCast/static/metro/
+CringeCast/static/vite.svg

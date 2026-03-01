@@ -1,0 +1,16 @@
+[Unit]
+Description=CringeCast Rust service
+After=network.target sound.target
+
+[Service]
+Type=simple
+User={{ app_user }}
+WorkingDirectory={{ app_dir }}
+Environment=CRINGECAST_ROOT={{ app_dir }}
+Environment=CRINGECAST_PORT={{ app_port }}
+ExecStart={{ app_dir }}/rust-rewrite/target/release/cringecast-server
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

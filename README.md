@@ -34,3 +34,9 @@ I also added volume bar at some point, when you run it on your PC, you can chang
 But the trolling functionality wasn't sophisticated enough yet - we needed a capability to play mp3 files, I added it with rather ease, but someone wanted a way to upload their own files too. And so it happend, my friend added that, creating a first real PR to my own project \*_\*
 
 Keep in mind, the project synthesizes **anything** that gets requested - meaning that sometimes you may hear you device saying `robots.txt`, `favicon.ico` (this one is detected as spanish, which is even funnier), or random phrases containing "PHP-something", which are just webcrawlers looking for unsecured wordpress websites.
+
+## Asset notice
+
+Some image assets in `CringeCast/static/metro` may come from third-party sources with unclear licensing.
+Treat these assets as **internal / non-commercial use only**.
+If you publish or redistribute this project, replace those images with assets you own or have explicit rights to use.

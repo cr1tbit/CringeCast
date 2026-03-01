@@ -1,0 +1,16 @@
+[package]
+name = "cringecast-rust-prep"
+version = "0.1.0"
+edition = "2018"
+
+[lib]
+name = "cringecast"
+path = "src/lib.rs"
+
+[[bin]]
+name = "cringecast-server"
+path = "src/main.rs"
+
+[dependencies]
+rouille = "3.0"
+serde_json = "1.0"

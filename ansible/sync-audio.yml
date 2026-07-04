@@ -1,0 +1,21 @@
+- name: Sync CringeCast audio files
+  hosts: cringebox
+  gather_facts: false
+  vars:
+    app_user: pi
+    app_dir: /home/pi/cringecast-rust
+    local_project_root: "{{ playbook_dir }}/.."
+
+  tasks:
+    - name: Ensure remote audio directory exists
+      ansible.builtin.raw: |
+        set -e
+        sudo mkdir -p {{ app_dir }}/audio_files
+        sudo chown -R {{ app_user }}:{{ app_user }} {{ app_dir }}/audio_files
+
+    - name: Sync audio files
+      ansible.builtin.command: >-
+        rsync -az
+        {{ local_project_root }}/audio_files/
+        {{ hostvars[inventory_hostname].ansible_user }}@{{ hostvars[inventory_hostname].ansible_host }}:{{ app_dir }}/audio_files/
+      delegate_to: localhost

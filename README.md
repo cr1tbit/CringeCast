@@ -35,6 +35,30 @@ But the trolling functionality wasn't sophisticated enough yet - we needed a cap
 
 Keep in mind, the project synthesizes **anything** that gets requested - meaning that sometimes you may hear you device saying `robots.txt`, `favicon.ico` (this one is detected as spanish, which is even funnier), or random phrases containing "PHP-something", which are just webcrawlers looking for unsecured wordpress websites.
 
+## Deployment (Ansible)
+
+Main app deploy (default: does **not** sync soundboard files from repo):
+
+```bash
+ansible-playbook -i ansible/inventory/hosts.ini ansible/deploy.yml
+```
+
+Main app deploy including audio sync from local `audio_files/`:
+
+```bash
+ansible-playbook -i ansible/inventory/hosts.ini ansible/deploy.yml -e sync_audio_files=true
+```
+
+Audio sync only:
+
+```bash
+ansible-playbook -i ansible/inventory/hosts.ini ansible/sync-audio.yml
+```
+
+Notes:
+- Runtime soundboard path on device is `/home/pi/cringecast-rust/audio_files`.
+- Upload endpoint writes `recent_upload/upload.mp3` under that same runtime directory.
+
 ## Asset notice
 
 Some image assets in `CringeCast/static/metro` may come from third-party sources with unclear licensing.

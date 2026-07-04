@@ -7,6 +7,10 @@
     app_user: pi
     app_dir: /home/pi/cringecast-rust
     app_port: 42069
+    sync_audio_files: false
+    app_queue_max: 2
+    app_queue_policy: drop_new
+    app_lcd_serial: /dev/ttyUSB0
     local_project_root: "{{ playbook_dir }}/.."
     local_binary: "{{ local_project_root }}/rust-rewrite/target/armv7-unknown-linux-musleabihf/release/cringecast-server"
 
@@ -23,6 +27,7 @@
         set -e
         sudo apt-get update -y
         sudo DEBIAN_FRONTEND=noninteractive apt-get install -y mpg123 alsa-utils rsync curl
+        sudo usermod -a -G dialout {{ app_user }}
 
     - name: Ensure target directories exist
       ansible.builtin.raw: |
@@ -44,6 +49,13 @@
         {{ hostvars[inventory_hostname].ansible_user }}@{{ hostvars[inventory_hostname].ansible_host }}:{{ app_dir }}/CringeCast/static/
       delegate_to: localhost
 
+    - name: Sync metro public image assets
+      ansible.builtin.command: >-
+        rsync -az
+        {{ local_project_root }}/frontend-react/public/static/metro/
+        {{ hostvars[inventory_hostname].ansible_user }}@{{ hostvars[inventory_hostname].ansible_host }}:{{ app_dir }}/CringeCast/static/metro/
+      delegate_to: localhost
+
     - name: Sync shell scripts
       ansible.builtin.command: >-
         rsync -az --delete
@@ -51,12 +63,15 @@
         {{ hostvars[inventory_hostname].ansible_user }}@{{ hostvars[inventory_hostname].ansible_host }}:{{ app_dir }}/CringeCast/shellscripts/
       delegate_to: localhost
 
-    - name: Sync audio files
+    - name: Sync audio files (optional)
       ansible.builtin.command: >-
         rsync -az
         {{ local_project_root }}/audio_files/
         {{ hostvars[inventory_hostname].ansible_user }}@{{ hostvars[inventory_hostname].ansible_host }}:{{ app_dir }}/audio_files/
       delegate_to: localhost
+      when: sync_audio_files | bool
+      tags:
+        - audio
 
     - name: Ensure scripts executable
       ansible.builtin.raw: |
@@ -78,6 +93,9 @@
         Environment=CRINGECAST_ROOT={{ app_dir }}
         Environment=CRINGECAST_PORT={{ app_port }}
         Environment=CRINGECAST_SUPER_SECRET_KEY={{ cringecast_super_secret_key }}
+        Environment=CRINGECAST_QUEUE_MAX={{ app_queue_max }}
+        Environment=CRINGECAST_QUEUE_POLICY={{ app_queue_policy }}
+        Environment=CRINGECAST_LCD_SERIAL={{ app_lcd_serial }}
         ExecStart={{ app_dir }}/bin/cringecast-server
         Restart=always
         RestartSec=5

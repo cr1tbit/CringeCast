@@ -151,6 +151,7 @@ dependencies = [
 name = "cringecast-rust-prep"
 version = "0.1.0"
 dependencies = [
+ "libc",
  "rouille",
  "serde_json",
 ]

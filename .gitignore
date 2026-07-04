@@ -2,6 +2,7 @@ __pycache__
 audio_files/*
 venv
 .python-version
+esp-fw/
 ansible/inventory/hosts.ini
 ansible/group_vars/all/secrets.yml
 CringeCast/static/assets/

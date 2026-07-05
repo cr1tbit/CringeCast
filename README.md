@@ -64,3 +64,7 @@ Notes:
 Some image assets in `CringeCast/static/metro` may come from third-party sources with unclear licensing.
 Treat these assets as **internal / non-commercial use only**.
 If you publish or redistribute this project, replace those images with assets you own or have explicit rights to use.
+
+## AI usage disclosure
+
+From some point, this project has been shamelessly vibecoded - especially the rust rewrite part.

@@ -1,0 +1,4 @@
+[submodule "esp-fw"]
+	path = esp-fw
+	url = git@github.com:cr1tbit/cringecast-esp-fw.git
+	branch = webserver
